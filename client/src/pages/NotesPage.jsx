@@ -107,7 +107,7 @@ const NotesPage = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gray-50 py-10 px-4">
+    <div className="min-h-screen bg-[var(--color-background)] py-10 px-4">
       <div className="max-w-4xl mx-auto space-y-6">
         <div className="flex justify-between items-center">
           <h2 className="text-3xl font-bold bg-gradient-to-r from-indigo-500 to-purple-500 text-transparent bg-clip-text">
@@ -120,7 +120,7 @@ const NotesPage = () => {
               setForm({ title: '', content: '', subject: '', status: 'Pending' });
               setFiles([]);
             }}
-            className="flex items-center gap-2 bg-indigo-600 text-white px-4 py-2 rounded-full hover:bg-indigo-700 transition"
+            className="flex items-center gap-2 btn-primary rounded-full px-5"
           >
             <FiPlus /> {showForm ? "Cancel" : "Add Note"}
           </button>
@@ -129,12 +129,12 @@ const NotesPage = () => {
         {showForm && (
           <form
             onSubmit={handleSubmit}
-            className="bg-white p-6 rounded-2xl shadow-xl border border-gray-100 space-y-5 animate-fade-in"
+            className="card space-y-5 animate-fade-in"
           >
             {/* Form Inputs */}
             {['title', 'subject', 'content'].map((field, i) => (
               <div key={i} className="space-y-2">
-                <label className="block text-sm font-medium text-gray-700 capitalize">{field}</label>
+                <label className="block text-sm font-medium text-slate-700 capitalize">{field}</label>
                 {field !== 'content' ? (
                   <input
                     type="text"
@@ -142,7 +142,7 @@ const NotesPage = () => {
                     onChange={(e) => setForm({ ...form, [field]: e.target.value })}
                     placeholder={`Enter ${field}`}
                     required={field === 'title'}
-                    className="w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                    className="input-field"
                   />
                 ) : (
                   <textarea
@@ -150,7 +150,7 @@ const NotesPage = () => {
                     required
                     value={form.content}
                     onChange={(e) => setForm({ ...form, content: e.target.value })}
-                    className="w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-400 resize-none"
+                    className="input-field resize-none"
                     placeholder="Write your note..."
                   />
                 )}
@@ -159,11 +159,11 @@ const NotesPage = () => {
 
             {/* Status */}
             <div className="space-y-2">
-              <label className="block text-sm font-medium text-gray-700">Status</label>
+              <label className="block text-sm font-medium text-slate-700">Status</label>
               <select
                 value={form.status}
                 onChange={(e) => setForm({ ...form, status: e.target.value })}
-                className="w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                className="input-field bg-white"
               >
                 <option value="Pending">Pending</option>
                 <option value="Understood">Understood</option>
@@ -173,7 +173,7 @@ const NotesPage = () => {
 
             {/* File Upload */}
             <div className="space-y-2">
-              <label htmlFor="fileUpload" className="flex items-center gap-2 text-sm font-medium text-indigo-600 cursor-pointer hover:text-indigo-800">
+              <label htmlFor="fileUpload" className="flex items-center gap-2 text-sm font-medium text-[var(--color-primary)] cursor-pointer hover:text-[var(--color-primary-hover)]">
                 <FiPlus className="text-lg" />
                 Attach Files
               </label>
@@ -186,7 +186,7 @@ const NotesPage = () => {
                 className="hidden"
               />
               {files.length > 0 && (
-                <ul className="text-sm text-gray-600 space-y-1">
+                <ul className="text-sm text-slate-600 space-y-1">
                   {files.map((file, i) => (
                     <li key={i} className="flex justify-between items-center">
                       <span>📄 {file.name}</span>
@@ -207,9 +207,9 @@ const NotesPage = () => {
             <div className="flex gap-4 mt-4">
               <button
                 type="submit"
-                className="bg-indigo-600 text-white px-5 py-2 rounded-lg hover:bg-indigo-700 transition"
+                className="btn-primary"
               >
-                {editNoteId ? 'Update Note' : 'Add Note'}
+                {editNoteId ? 'Update Note' : 'Save Note'}
               </button>
               {editNoteId && (
                 <button
@@ -220,7 +220,7 @@ const NotesPage = () => {
                     setFiles([]);
                     setShowForm(false);
                   }}
-                  className="bg-gray-300 text-gray-800 px-5 py-2 rounded-lg hover:bg-gray-400"
+                  className="btn-secondary"
                 >
                   Cancel
                 </button>
@@ -229,60 +229,78 @@ const NotesPage = () => {
           </form>
         )}
 
-        {/* Display Notes */}
+        {/* Display Notes or Empty State */}
         <div className="space-y-4">
-          {notes.map((note) => (
-            <div key={note._id} className="bg-white p-4 rounded-xl shadow-sm hover:shadow-md transition space-y-2">
+          {notes.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-20 bg-white/50 rounded-2xl border-2 border-dashed border-slate-200 text-center">
+               <div className="w-16 h-16 bg-purple-50 text-purple-400 rounded-full flex items-center justify-center text-3xl mb-4">
+                <FiEdit />
+              </div>
+              <h3 className="text-xl font-bold text-slate-700">No notes found</h3>
+              <p className="text-slate-500 mt-2 max-w-sm">
+                Create your first note to start organizing your thoughts and study materials.
+              </p>
+              <button
+                onClick={() => setShowForm(true)}
+                className="mt-6 text-[var(--color-primary)] font-medium hover:underline"
+              >
+                Create new note &rarr;
+              </button>
+            </div>
+          ) : (
+            notes.map((note) => (
+            <div key={note._id} className="card hover:shadow-md transition space-y-3 relative group">
               <div className="flex justify-between items-start">
-                <h4 className="text-lg font-bold text-indigo-700">{note.title}</h4>
-                <div className="flex items-center gap-2">
-                  <button onClick={() => startEdit(note)} className="text-indigo-600 hover:text-indigo-800">
+                <div>
+                  <h4 className="text-lg font-bold text-slate-800">{note.title}</h4>
+                  <p className="text-xs text-slate-500 uppercase tracking-wider font-semibold mt-1">{note.subject}</p>
+                </div>
+                <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <button onClick={() => startEdit(note)} className="text-slate-400 hover:text-[var(--color-primary)] p-1 rounded transition-colors">
                     <FiEdit />
                   </button>
                   {confirmDeleteId === note._id ? (
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 bg-red-50 p-1 rounded">
                       <button
                         onClick={() => deleteNote(note._id)}
-                        className="text-red-600 hover:text-red-800 text-lg"
+                        className="text-red-600 hover:text-red-800"
                         title="Confirm Delete"
                       >
                         <FiCheck />
                       </button>
                       <button
                         onClick={() => setConfirmDeleteId(null)}
-                        className="text-gray-500 hover:text-gray-700 text-lg"
+                        className="text-slate-500 hover:text-slate-700"
                         title="Cancel"
                       >
                         <FiX />
                       </button>
                     </div>
                   ) : (
-                    <button onClick={() => setConfirmDeleteId(note._id)} className="text-red-500 hover:text-red-700">
+                    <button onClick={() => setConfirmDeleteId(note._id)} className="text-slate-400 hover:text-red-500 p-1 rounded transition-colors">
                       <FiTrash2 />
                     </button>
                   )}
                 </div>
               </div>
 
-              <p className="text-sm text-gray-500">
-                {note.subject}
-                <span className="mx-2 text-gray-400">•</span>
-                <span className={`font-medium ${
+              <div className="flex items-center gap-2 mb-2">
+                 <span className={`text-xs px-2 py-1 rounded-full font-medium border ${
                   note.status === 'Understood'
-                    ? 'text-green-600 bg-green-100 px-2 py-0.5 rounded-full'
+                    ? 'text-green-700 bg-green-50 border-green-200'
                     : note.status === 'Revisit'
-                    ? 'text-red-600 bg-red-100 px-2 py-0.5 rounded-full'
-                    : 'text-yellow-600 bg-yellow-100 px-2 py-0.5 rounded-full'
+                    ? 'text-red-700 bg-red-50 border-red-200'
+                    : 'text-yellow-700 bg-yellow-50 border-yellow-200'
                 }`}>
                   {note.status}
                 </span>
+              </div>
+
+              <p className="text-slate-700 leading-relaxed font-sans">
+                {expandedNotes[note._id] ? note.content : note.content.length > 150 ? note.content.slice(0, 150) + '...' : note.content}
               </p>
 
-              <p className="text-gray-700">
-                {expandedNotes[note._id] ? note.content : note.content.length > 100 ? note.content.slice(0, 100) + '...' : note.content}
-              </p>
-
-              {note.content.length > 100 && (
+              {note.content.length > 150 && (
                 <button
                   onClick={() =>
                     setExpandedNotes((prev) => ({
@@ -290,44 +308,48 @@ const NotesPage = () => {
                       [note._id]: !prev[note._id],
                     }))
                   }
-                  className="text-sm text-blue-600 hover:underline"
+                  className="text-sm text-[var(--color-primary)] hover:underline font-medium"
                 >
-                  {expandedNotes[note._id] ? 'View Less' : 'View More'}
+                  {expandedNotes[note._id] ? 'Read Less' : 'Read More'}
                 </button>
               )}
 
               {/* Attachment Preview */}
               {note.attachments?.length > 0 && (
-                <div className="mt-2 space-y-3">
-                  <p className="font-medium text-sm">Attachments:</p>
+                <div className="mt-4 pt-4 border-t border-slate-100">
+                  <p className="font-medium text-xs text-slate-400 uppercase mb-2">Attachments</p>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                   {note.attachments.map((att, i) => (
-                    <div key={i}>
+                    <div key={i} className="bg-slate-50 rounded-lg p-2 border border-slate-100">
                       {att?.format === 'pdf' && att?.url ? (
-                        <iframe
-                          src={att.url}
-                          title={`PDF-${i}`}
-                          width="100%"
-                          height="500px"
-                          className="rounded border"
-                        />
+                        <div className="space-y-2">
+                            <span className="text-xs font-semibold text-slate-500 block">PDF Document</span>
+                             <a href={att.url} target="_blank" rel="noopener noreferrer" className="text-xs text-[var(--color-primary)] hover:underline block truncate">
+                                View PDF
+                             </a>
+                        </div>
                       ) : att?.url ? (
-                        <a
-                          href={att.url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-blue-600 underline text-sm block"
-                        >
-                          📎 {att.format?.toUpperCase() || "File"} {i + 1}
-                        </a>
+                         <div className="flex items-center gap-2">
+                            <span className="text-lg">📎</span>
+                            <a
+                              href={att.url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-sm text-slate-700 hover:text-[var(--color-primary)] truncate block"
+                            >
+                              File attachment {i + 1}
+                            </a>
+                        </div>
                       ) : (
-                        <span className="text-red-500 text-sm">⚠️ Invalid attachment</span>
+                        <span className="text-red-500 text-xs">⚠️ Invalid attachment</span>
                       )}
                     </div>
                   ))}
+                  </div>
                 </div>
               )}
             </div>
-          ))}
+          )))}
         </div>
       </div>
     </div>

@@ -1,12 +1,78 @@
 @import "tailwindcss";
 
+@theme {
+  --color-primary: #4f46e5; /* Indigo 600 */
+  --color-primary-hover: #4338ca; /* Indigo 700 */
+  --color-secondary: #64748b; /* Slate 500 */
+  --color-background: #f8fafc; /* Slate 50 */
+  --color-surface: #ffffff; /* White */
+  --color-accent: #e0e7ff; /* Indigo 100 */
+
+  --font-sans: "Inter", system-ui, sans-serif;
+}
+
 body {
-  font-family: 'Inter', sans-serif;
+  font-family: var(--font-sans);
+  background-color: #f8fafc;
+  /* More vibrant, academic-themed soft gradient mesh */
+  background-image: 
+    radial-gradient(at 0% 0%, hsla(220, 100%, 98%, 1) 0px, transparent 50%),
+    radial-gradient(at 100% 0%, hsla(260, 100%, 97%, 1) 0px, transparent 50%),
+    radial-gradient(at 100% 100%, hsla(220, 100%, 98%, 1) 0px, transparent 50%),
+    radial-gradient(at 0% 100%, hsla(260, 100%, 97%, 1) 0px, transparent 50%),
+    radial-gradient(at 50% 50%, hsla(240, 100%, 99%, 1) 0px, transparent 50%);
+  background-attachment: fixed;
+  color: #1e293b; /* Slate 800 */
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Notebook grid pattern */
+body::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: 
+    linear-gradient(to right, rgba(99, 102, 241, 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(99, 102, 241, 0.05) 1px, transparent 1px);
+  background-size: 30px 30px;
+  z-index: -1;
+  pointer-events: none;
+}
+
+@layer utilities {
+  .btn-primary {
+    @apply px-4 py-2 bg-[var(--color-primary)] text-white rounded-lg font-medium 
+           hover:bg-[var(--color-primary-hover)] transition-colors duration-200 
+           focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] focus:ring-offset-1;
+  }
+
+  .btn-secondary {
+    @apply px-4 py-2 bg-white text-slate-700 border border-slate-300 rounded-lg font-medium
+           hover:bg-slate-50 transition-colors duration-200
+           focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-1;
+  }
+
+  .card {
+    @apply bg-[var(--color-surface)] rounded-xl shadow-sm border border-slate-200 p-6;
+  }
+
+  .input-field {
+    @apply w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-[var(--color-primary)] focus:border-[var(--color-primary)] outline-none transition-all;
+  }
 }
 
 @keyframes fade-in {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .animate-fade-in {

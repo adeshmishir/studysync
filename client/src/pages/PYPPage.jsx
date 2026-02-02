@@ -12,6 +12,7 @@ import {
   FiFileText,
   FiChevronDown,
   FiChevronUp,
+  FiArrowRight,
 } from 'react-icons/fi';
 
 const PYPPage = () => {
@@ -23,6 +24,7 @@ const PYPPage = () => {
   const [confirmDeleteId, setConfirmDeleteId] = useState(null);
   const [filters, setFilters] = useState({ year: '', semester: '', term: '', subject: '' });
   const [showFilter, setShowFilter] = useState(false);
+  const [previewUrl, setPreviewUrl] = useState(null);
 
   const fetchPapers = async () => {
     try {
@@ -114,7 +116,48 @@ const PYPPage = () => {
   }, [filters, papers]);
 
   return (
-    <div className="min-h-screen bg-gray-50 py-10 px-4">
+    <div className="min-h-screen bg-[var(--color-background)] py-10 px-4">
+      {/* PDF Preview Modal */}
+      {previewUrl && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-fade-in">
+          <div className="bg-white w-full max-w-5xl h-[90vh] rounded-2xl shadow-2xl flex flex-col overflow-hidden border border-white/20">
+            <div className="px-6 py-4 border-b border-slate-100 flex justify-between items-center bg-white">
+              <h3 className="text-lg font-bold text-slate-800 flex items-center gap-2">
+                <FiFileText className="text-indigo-600" /> Paper Preview
+              </h3>
+              <button 
+                onClick={() => setPreviewUrl(null)}
+                className="p-2 hover:bg-slate-100 rounded-full text-slate-400 hover:text-slate-600 transition-colors"
+              >
+                <FiX size={24} />
+              </button>
+            </div>
+            <div className="flex-1 bg-slate-100 relative">
+              <iframe
+                src={`https://docs.google.com/gview?url=${encodeURIComponent(previewUrl)}&embedded=true`}
+                className="w-full h-full border-none"
+                title="Paper Preview"
+              />
+            </div>
+            <div className="p-4 border-t border-slate-100 flex justify-end gap-3 bg-white">
+               <a
+                  href={previewUrl}
+                  download
+                  className="px-6 py-2 bg-indigo-600 text-white rounded-lg font-medium hover:bg-indigo-700 transition shadow-lg shadow-indigo-100"
+                >
+                  Download This Paper
+                </a>
+               <button 
+                onClick={() => setPreviewUrl(null)}
+                className="px-6 py-2 bg-white text-slate-600 border border-slate-200 rounded-lg font-medium hover:bg-slate-50 transition"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="max-w-4xl mx-auto space-y-6">
         <h2 className="text-3xl font-bold bg-gradient-to-r from-indigo-500 to-purple-500 text-transparent bg-clip-text">
           📘 Previous Year Papers
@@ -122,14 +165,14 @@ const PYPPage = () => {
 
         <button
           onClick={() => setShowFilter(!showFilter)}
-          className="flex items-center gap-2 px-4 py-2 bg-white shadow rounded-lg text-indigo-600 hover:bg-indigo-50 transition"
+          className="flex items-center gap-2 px-4 py-2 bg-white shadow-sm border border-slate-200 rounded-lg text-[var(--color-primary)] hover:bg-indigo-50 transition"
         >
           <FiFilter /> {showFilter ? 'Hide Filters' : 'Show Filters'} {showFilter ? <FiChevronUp /> : <FiChevronDown />}
         </button>
 
         {showFilter && (
-          <div className="bg-white p-4 rounded-xl shadow-sm space-y-4">
-            <h3 className="text-lg font-semibold text-gray-700 flex items-center gap-2">
+          <div className="card space-y-4 animate-fade-in">
+            <h3 className="text-lg font-semibold text-slate-700 flex items-center gap-2">
               <FiFilter /> Filter Papers
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
@@ -138,26 +181,26 @@ const PYPPage = () => {
                 placeholder="Subject"
                 value={filters.subject}
                 onChange={(e) => setFilters({ ...filters, subject: e.target.value.trim() })}
-                className="border border-gray-300 p-2 rounded-lg w-full"
+                className="input-field"
               />
               <input
                 type="text"
                 placeholder="Year"
                 value={filters.year}
                 onChange={(e) => setFilters({ ...filters, year: e.target.value.trim() })}
-                className="border border-gray-300 p-2 rounded-lg w-full"
+                className="input-field"
               />
               <input
                 type="text"
                 placeholder="Semester"
                 value={filters.semester}
                 onChange={(e) => setFilters({ ...filters, semester: e.target.value.trim() })}
-                className="border border-gray-300 p-2 rounded-lg w-full"
+                className="input-field"
               />
               <select
                 value={filters.term}
                 onChange={(e) => setFilters({ ...filters, term: e.target.value })}
-                className="border border-gray-300 p-2 rounded-lg w-full"
+                className="input-field bg-white"
               >
                 <option value="">All Terms</option>
                 <option value="MidSem">MidSem</option>
@@ -168,8 +211,8 @@ const PYPPage = () => {
         )}
 
         {user?.role === 'admin' && (
-          <form onSubmit={handleUpload} className="bg-white p-6 rounded-2xl shadow-md border border-gray-200 space-y-4">
-            <h3 className="text-xl font-semibold text-gray-700 flex items-center gap-2">
+          <form onSubmit={handleUpload} className="card space-y-4">
+            <h3 className="text-xl font-semibold text-slate-700 flex items-center gap-2">
               <FiUpload /> Upload New Paper
             </h3>
 
@@ -180,7 +223,7 @@ const PYPPage = () => {
                 value={form.subject}
                 onChange={(e) => setForm({ ...form, subject: e.target.value })}
                 required
-                className="border border-gray-300 p-2 rounded-lg"
+                className="input-field"
               />
               <input
                 type="number"
@@ -188,7 +231,7 @@ const PYPPage = () => {
                 value={form.year}
                 onChange={(e) => setForm({ ...form, year: e.target.value })}
                 required
-                className="border border-gray-300 p-2 rounded-lg"
+                className="input-field"
               />
               <input
                 type="number"
@@ -196,12 +239,12 @@ const PYPPage = () => {
                 value={form.semester}
                 onChange={(e) => setForm({ ...form, semester: e.target.value })}
                 required
-                className="border border-gray-300 p-2 rounded-lg"
+                className="input-field"
               />
               <select
                 value={form.term}
                 onChange={(e) => setForm({ ...form, term: e.target.value })}
-                className="border border-gray-300 p-2 rounded-lg"
+                className="input-field bg-white"
               >
                 <option value="MidSem">MidSem</option>
                 <option value="EndSem">EndSem</option>
@@ -209,7 +252,7 @@ const PYPPage = () => {
             </div>
 
             <div className="flex items-center gap-2">
-              <label htmlFor="fileUpload" className="flex items-center gap-2 text-sm text-indigo-600 cursor-pointer">
+              <label htmlFor="fileUpload" className="flex items-center gap-2 text-sm text-[var(--color-primary)] cursor-pointer hover:underline font-medium">
                 <FiPlus className="text-xl" /> Attach PDF
               </label>
               <input
@@ -219,57 +262,81 @@ const PYPPage = () => {
                 onChange={(e) => setFile(e.target.files[0])}
                 className="hidden"
               />
-              {file && <span className="text-sm text-gray-600">📄 {file.name}</span>}
+              {file && <span className="text-sm text-slate-600 bg-slate-100 px-2 py-1 rounded">📄 {file.name}</span>}
             </div>
 
-            <button type="submit" className="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition">
-              <FiUpload className="inline mr-1" /> Upload
+            <button type="submit" className="btn-primary flex items-center gap-2">
+              <FiUpload className="inline" /> Upload
             </button>
           </form>
         )}
 
         {/* Papers List */}
         <div className="space-y-4">
-          <h3 className="text-xl font-semibold text-gray-700 flex items-center gap-2">
+          <h3 className="text-xl font-semibold text-slate-700 flex items-center gap-2 font-serif">
             <FiFileText /> Available Papers
           </h3>
-          {filteredPapers.map((paper) => (
-            <div key={paper._id} className="bg-white p-4 rounded-xl shadow-sm hover:shadow-md transition space-y-1">
+          {filteredPapers.length === 0 ? (
+            <div className="card py-16 text-center space-y-4 flex flex-col items-center justify-center bg-white/40 border-dashed border-2">
+               <div className="w-16 h-16 bg-slate-100 text-slate-400 rounded-full flex items-center justify-center text-3xl">
+                <FiFileText />
+              </div>
+              <div>
+                <h4 className="text-xl font-bold text-slate-700">No papers found</h4>
+                <p className="text-slate-500 mt-2 max-w-xs mx-auto">
+                  Try adjusting your filters or search terms to find what you're looking for.
+                </p>
+              </div>
+            </div>
+          ) : (
+            filteredPapers.map((paper) => (
+            <div key={paper._id} className="card hover:shadow-md transition space-y-1">
               <div className="flex justify-between items-center">
-                <h4 className="text-lg font-bold text-indigo-700">{paper.subject}</h4>
+                <h4 className="text-lg font-bold text-slate-800">{paper.subject}</h4>
                 <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => setPreviewUrl(paper.file.url)}
+                    className="text-sm bg-slate-100 text-slate-600 px-3 py-1 rounded-full hover:bg-slate-200 transition font-medium border border-slate-200 flex items-center gap-1"
+                    title="Preview Paper"
+                  >
+                    <FiFileText /> View
+                  </button>
                   <a
                     href={paper?.file?.url}
+                    download
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-sm bg-blue-100 text-blue-700 px-3 py-1 rounded-full hover:bg-blue-200 transition"
+                    className="text-sm bg-indigo-50 text-[var(--color-primary)] px-3 py-1 rounded-full hover:bg-indigo-100 transition font-medium border border-indigo-100 flex items-center gap-1"
+                    title="Download Paper"
                   >
-                    <FiFileText className="inline mr-1" /> Download
+                    <FiArrowRight /> Download
                   </a>
                   {user?.role === 'admin' && (
                     confirmDeleteId === paper._id ? (
-                      <>
+                      <div className="flex items-center gap-1 bg-red-50 p-1 rounded">
                         <button onClick={() => deletePaper(paper._id)} className="text-red-600 hover:text-red-800">
                           <FiCheck />
                         </button>
-                        <button onClick={() => setConfirmDeleteId(null)} className="text-gray-500 hover:text-gray-700">
+                        <button onClick={() => setConfirmDeleteId(null)} className="text-slate-500 hover:text-slate-700">
                           <FiX />
                         </button>
-                      </>
+                      </div>
                     ) : (
-                      <button onClick={() => setConfirmDeleteId(paper._id)} className="text-red-500 hover:text-red-700">
+                      <button onClick={() => setConfirmDeleteId(paper._id)} className="text-slate-400 hover:text-red-500 transition-colors">
                         <FiTrash2 />
                       </button>
                     )
                   )}
                 </div>
               </div>
+            </div>
 
-              <p className="text-sm text-gray-500">
+              <p className="text-sm text-slate-500 font-medium">
                 📅 {paper.year} • 🎓 Sem {paper.semester} • 🧾 <span className="capitalize">{paper.term}</span>
               </p>
             </div>
-          ))}
+          )))}
         </div>
       </div>
     </div>

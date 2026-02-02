@@ -22,53 +22,59 @@ const DashboardLayout = () => {
   ];
 
   return (
-    <div className="flex min-h-screen font-inter bg-gray-50">
+    <div className="flex min-h-screen font-sans bg-[var(--color-background)]">
       {/* Sidebar */}
-      <aside className="w-64 bg-white shadow-md px-6 py-8 space-y-8 hidden md:block">
-        <h1 className="text-2xl font-bold text-indigo-600 tracking-tight">📚 StudySync</h1>
+      <aside className="w-64 bg-[var(--color-surface)] shadow-sm border-r border-slate-200 px-6 py-8 space-y-8 hidden md:block">
+        <h1 className="text-2xl font-bold text-[var(--color-primary)] tracking-tight flex items-center gap-2">
+          <FiBookOpen className="text-3xl" />
+          StudySync
+        </h1>
 
-        <nav className="space-y-4 text-gray-700">
+        <nav className="space-y-2 text-slate-600">
           {navLinks.map((link) => (
             <Link
               key={link.to}
               to={link.to}
-              className={`flex items-center gap-2 px-3 py-2 rounded-md hover:text-indigo-600 hover:bg-indigo-50 transition ${
+              className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 group ${
                 location.pathname.includes(link.key)
-                  ? "text-indigo-700 bg-indigo-100 font-semibold"
-                  : ""
+                  ? "bg-[var(--color-primary)] text-white shadow-md shadow-indigo-200"
+                  : "hover:bg-slate-50 hover:text-[var(--color-primary)]"
               }`}
             >
-              {link.icon}
-              {link.label}
+              <span className={`text-xl ${location.pathname.includes(link.key) ? "text-white" : "text-slate-400 group-hover:text-[var(--color-primary)]"}`}>
+                {link.icon}
+              </span>
+              <span className="font-medium">{link.label}</span>
             </Link>
           ))}
         </nav>
 
         {/* Logout Button with Confirmation */}
-        <div className="relative">
+        <div className="pt-8 border-t border-slate-100">
           <button
             onClick={() => setConfirmLogout(true)}
-            className="flex items-center gap-2 text-sm text-red-600 px-3 py-2 hover:bg-red-100 rounded-md transition"
+            className="flex items-center gap-3 text-sm text-slate-500 px-4 py-2 hover:bg-red-50 hover:text-red-600 rounded-lg transition-colors w-full"
           >
-            <FiLogOut />
-            Logout
+            <FiLogOut className="text-lg" />
+            <span className="font-medium">Logout</span>
           </button>
 
           {confirmLogout && (
-            <div className="flex items-center gap-3 mt-2 ml-1">
+            <div className="flex items-center gap-3 mt-4 justify-center bg-red-50 p-2 rounded-lg">
+              <span className="text-xs text-red-600 font-medium">Confirm?</span>
               <button
                 onClick={() => {
                   logout();
                   window.location.href = "/login";
                 }}
-                className="text-green-600 hover:text-green-800 text-xl"
+                className="text-white bg-red-500 hover:bg-red-600 p-1 rounded transition-colors"
                 title="Confirm Logout"
               >
                 <FiCheck />
               </button>
               <button
                 onClick={() => setConfirmLogout(false)}
-                className="text-gray-500 hover:text-gray-700 text-xl"
+                className="text-slate-500 hover:text-slate-700 p-1 rounded transition-colors"
                 title="Cancel"
               >
                 <FiX />
@@ -79,13 +85,19 @@ const DashboardLayout = () => {
       </aside>
 
       {/* Main Content Area */}
-      <main className="flex-1 p-4 md:p-8">
-        <div className="mb-6 flex justify-between items-center">
-          <h2 className="text-2xl font-bold text-indigo-700">Welcome to StudySync</h2>
-        </div>
+      <main className="flex-1 p-6 md:p-10 overflow-y-auto">
+        <div className="max-w-7xl mx-auto">
+          <div className="mb-8 flex justify-between items-center">
+            <h2 className="text-3xl font-bold tracking-tight bg-gradient-to-r from-indigo-600 to-purple-600 text-transparent bg-clip-text">
+              Welcome back, Scholar
+            </h2>
+          </div>
 
-        {/* Nested Routes Rendered Here */}
-        <Outlet />
+          {/* Nested Routes Rendered Here */}
+          <div className="animate-fade-in">
+            <Outlet />
+          </div>
+        </div>
       </main>
     </div>
   );

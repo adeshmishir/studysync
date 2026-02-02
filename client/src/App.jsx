@@ -7,21 +7,17 @@ import DashboardLayout from './components/DashboardLayout';
 import ProtectedRoute from './components/ProtectedRoute';
 import { Toaster } from 'react-hot-toast';
 import AttendancePage from './pages/AttendancePage';
-
-
-
+import LandingPage from './pages/LandingPage';
 
 const App = () => {
   return (
     <Router>
-      <Toaster position="top-right" toastOptions={{ duration: 3000 }} /> {/* ✅ Added */}
+      <Toaster position="top-right" toastOptions={{ duration: 3000 }} />
       <Routes>
-        <Route path="/" element={<Navigate to="/dashboard/notes" />} />
+        <Route path="/" element={<LandingPage />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/login" element={<Login />} />
-        <Route path="/dashboard/attendance" element={<AttendancePage />} />
         
-
         {/* Protected Dashboard */}
         <Route
           path="/dashboard"
@@ -31,8 +27,10 @@ const App = () => {
             </ProtectedRoute>
           }
         >
+          <Route index element={<Navigate to="/dashboard/notes" replace />} />
           <Route path="notes" element={<NotesPage />} />
-          <Route path="pyp" element={<PYPPage />} />
+          <Route path="pyp" element={<PYPPage />} />  
+          <Route path="attendance" element={<AttendancePage />} />
         </Route>
       </Routes>
     </Router>
