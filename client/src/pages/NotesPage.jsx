@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 import useAuthStore from '../context/authStore';
-import { FiEdit, FiTrash2, FiPlus, FiX, FiCheck } from 'react-icons/fi';
+import { FiEdit, FiTrash2, FiPlus, FiX, FiCheck, FiFileText } from 'react-icons/fi';
 
 const NotesPage = () => {
   const { token } = useAuthStore();
@@ -13,6 +13,8 @@ const NotesPage = () => {
   const [confirmDeleteId, setConfirmDeleteId] = useState(null);
   const [expandedNotes, setExpandedNotes] = useState({});
   const [showForm, setShowForm] = useState(false);
+  const [previewUrl, setPreviewUrl] = useState(null);
+  const [previewType, setPreviewType] = useState('pdf');
 
   const fetchNotes = async () => {
     try {
@@ -102,12 +104,68 @@ const NotesPage = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
+  const handlePreview = (url, format) => {
+    setPreviewUrl(url);
+    // Simple check for images, otherwise assume PDF/previewable
+    if (format === 'jpg' || format === 'jpeg' || format === 'png' || format === 'webp') {
+        setPreviewType('image');
+    } else {
+        setPreviewType('pdf');
+    }
+  };
+
   useEffect(() => {
     fetchNotes();
   }, []);
 
   return (
     <div className="min-h-screen bg-[var(--color-background)] py-10 px-4">
+      {/* PDF/Image Preview Modal */}
+      {previewUrl && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-fade-in">
+          <div className="bg-white w-full max-w-5xl h-[90vh] rounded-2xl shadow-2xl flex flex-col overflow-hidden border border-white/20">
+            <div className="px-6 py-4 border-b border-slate-100 flex justify-between items-center bg-white">
+              <h3 className="text-lg font-bold text-slate-800 flex items-center gap-2">
+                <FiFileText className="text-indigo-600" /> Note Attachment Preview
+              </h3>
+              <button 
+                onClick={() => setPreviewUrl(null)}
+                className="p-2 hover:bg-slate-100 rounded-full text-slate-400 hover:text-slate-600 transition-colors"
+                title="Close"
+              >
+                <FiX size={24} />
+              </button>
+            </div>
+            <div className="flex-1 bg-slate-100 relative overflow-auto flex items-center justify-center">
+              {previewType === 'image' ? (
+                <img src={previewUrl} alt="Attachment" className="max-w-full max-h-full object-contain shadow-md" />
+              ) : (
+                <iframe
+                  src={`https://docs.google.com/gview?url=${encodeURIComponent(previewUrl)}&embedded=true`}
+                  className="w-full h-full border-none"
+                  title="Note Preview"
+                />
+              )}
+            </div>
+            <div className="p-4 border-t border-slate-100 flex justify-end gap-3 bg-white">
+               <a
+                  href={previewUrl}
+                  download
+                  className="px-6 py-2 bg-indigo-600 text-white rounded-lg font-medium hover:bg-indigo-700 transition shadow-lg shadow-indigo-100"
+                >
+                  Download Attachment
+                </a>
+               <button 
+                onClick={() => setPreviewUrl(null)}
+                className="px-6 py-2 bg-white text-slate-600 border border-slate-200 rounded-lg font-medium hover:bg-slate-50 transition"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="max-w-4xl mx-auto space-y-6">
         <div className="flex justify-between items-center">
           <h2 className="text-3xl font-bold bg-gradient-to-r from-indigo-500 to-purple-500 text-transparent bg-clip-text">
@@ -320,29 +378,32 @@ const NotesPage = () => {
                   <p className="font-medium text-xs text-slate-400 uppercase mb-2">Attachments</p>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                   {note.attachments.map((att, i) => (
-                    <div key={i} className="bg-slate-50 rounded-lg p-2 border border-slate-100">
-                      {att?.format === 'pdf' && att?.url ? (
-                        <div className="space-y-2">
-                            <span className="text-xs font-semibold text-slate-500 block">PDF Document</span>
-                             <a href={att.url} target="_blank" rel="noopener noreferrer" className="text-xs text-[var(--color-primary)] hover:underline block truncate">
-                                View PDF
-                             </a>
-                        </div>
-                      ) : att?.url ? (
-                         <div className="flex items-center gap-2">
-                            <span className="text-lg">📎</span>
-                            <a
-                              href={att.url}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="text-sm text-slate-700 hover:text-[var(--color-primary)] truncate block"
+                    <div key={i} className="bg-slate-50 rounded-lg p-3 border border-slate-100 flex items-center justify-between gap-2 overflow-hidden">
+                      <div className="flex items-center gap-2 overflow-hidden">
+                        <span className="text-lg flex-shrink-0">📎</span>
+                        <span className="text-sm text-slate-700 truncate font-medium">
+                          {att?.format === 'pdf' ? `PDF Note` : `Attachment ${i + 1}`}
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        {att?.url && (
+                            <button
+                                onClick={() => handlePreview(att.url, att.format)}
+                                className="text-xs bg-indigo-50 text-indigo-600 px-3 py-1.5 rounded font-bold hover:bg-indigo-100 transition whitespace-nowrap"
                             >
-                              File attachment {i + 1}
-                            </a>
-                        </div>
-                      ) : (
-                        <span className="text-red-500 text-xs">⚠️ Invalid attachment</span>
-                      )}
+                                {att.format === 'pdf' ? 'View Paper' : 'View'}
+                            </button>
+                        )}
+                        <a
+                           href={att.url}
+                           target="_blank"
+                           rel="noopener noreferrer"
+                           className="text-slate-400 hover:text-indigo-600 transition"
+                           title="Download"
+                        >
+                           <FiFileText />
+                        </a>
+                      </div>
                     </div>
                   ))}
                   </div>

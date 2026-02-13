@@ -5,7 +5,10 @@ import useAuthStore from '../context/authStore';
 import toast from 'react-hot-toast';
 import { FiLogIn } from 'react-icons/fi';
 
+import { GoogleLogin } from '@react-oauth/google';
+
 const Login = () => {
+  // ... existing states ...
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
@@ -14,7 +17,6 @@ const Login = () => {
 
   const handleLogin = async (e) => {
     e.preventDefault();
-
     try {
       const res = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/auth/login`, {
         email,
@@ -34,6 +36,22 @@ const Login = () => {
     }
   };
 
+  const handleGoogleSuccess = async (credentialResponse) => {
+    try {
+      const res = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/auth/google`, {
+        credential: credentialResponse.credential
+      });
+      if (res.data.success) {
+        toast.success("Login successful!");
+        setToken(res.data.token);
+        setUser(res.data.user);
+        navigate("/dashboard/notes");
+      }
+    } catch (err) {
+      toast.error("Google authentication failed");
+    }
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-100 to-blue-100 font-sans px-4">
       <div className="card w-full max-w-md bg-white/90 backdrop-blur-sm border-white/50 shadow-xl">
@@ -48,6 +66,7 @@ const Login = () => {
         </div>
 
         <form onSubmit={handleLogin} className="space-y-5">
+          {/* ... existing inputs ... */}
           <div>
             <label className="block text-sm font-medium text-slate-700 mb-1">Email</label>
             <input
@@ -79,6 +98,26 @@ const Login = () => {
             Login
           </button>
         </form>
+
+        <div className="mt-6 flex flex-col items-center gap-4">
+          <div className="w-full flex items-center gap-3">
+            <div className="h-px bg-slate-200 flex-1"></div>
+            <span className="text-xs text-slate-400 font-medium">OR</span>
+            <div className="h-px bg-slate-200 flex-1"></div>
+          </div>
+          
+          <div className="w-full flex justify-center">
+            <GoogleLogin
+              onSuccess={handleGoogleSuccess}
+              onError={() => toast.error("Google Login failed")}
+              useOneTap
+              theme="outline"
+              shape="pill"
+              size="large"
+              text="continue_with"
+            />
+          </div>
+        </div>
 
         <p className="text-sm text-center text-slate-500 mt-6">
           Don’t have an account?{' '}

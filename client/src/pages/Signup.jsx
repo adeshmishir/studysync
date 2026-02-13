@@ -5,7 +5,10 @@ import toast from 'react-hot-toast';
 import useAuthStore from '../context/authStore';
 import { FiUserPlus } from 'react-icons/fi';
 
+import { GoogleLogin } from '@react-oauth/google';
+
 const Signup = () => {
+  // ... existing states ...
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -34,6 +37,22 @@ const Signup = () => {
     }
   };
 
+  const handleGoogleSuccess = async (credentialResponse) => {
+    try {
+      const res = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/auth/google`, {
+        credential: credentialResponse.credential
+      });
+      if (res.data.success) {
+        toast.success("Account created successfully!");
+        setToken(res.data.token);
+        setUser(res.data.user);
+        navigate("/dashboard/notes");
+      }
+    } catch (err) {
+      toast.error("Google registration failed");
+    }
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-100 to-blue-100 font-sans px-4">
       <div className="card w-full max-w-md bg-white/90 backdrop-blur-sm border-white/50 shadow-xl">
@@ -48,6 +67,7 @@ const Signup = () => {
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-5">
+          {/* ... existing inputs ... */}
           <div>
             <label className="block text-sm font-medium text-slate-700 mb-1">Full Name</label>
             <input
@@ -91,6 +111,26 @@ const Signup = () => {
             Sign Up
           </button>
         </form>
+
+        <div className="mt-6 flex flex-col items-center gap-4">
+          <div className="w-full flex items-center gap-3">
+            <div className="h-px bg-slate-200 flex-1"></div>
+            <span className="text-xs text-slate-400 font-medium">OR</span>
+            <div className="h-px bg-slate-200 flex-1"></div>
+          </div>
+          
+          <div className="w-full flex justify-center">
+            <GoogleLogin
+              onSuccess={handleGoogleSuccess}
+              onError={() => toast.error("Google Sign Up failed")}
+              useOneTap
+              theme="outline"
+              shape="pill"
+              size="large"
+              text="continue_with"
+            />
+          </div>
+        </div>
 
         <p className="text-center text-sm text-slate-500 mt-6">
           Already have an account?{' '}

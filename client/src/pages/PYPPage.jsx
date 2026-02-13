@@ -297,21 +297,11 @@ const PYPPage = () => {
                 <div className="flex items-center gap-2">
                   <button
                     onClick={() => setPreviewUrl(paper.file.url)}
-                    className="text-sm bg-slate-100 text-slate-600 px-3 py-1 rounded-full hover:bg-slate-200 transition font-medium border border-slate-200 flex items-center gap-1"
-                    title="Preview Paper"
+                    className="text-sm bg-indigo-50 text-[var(--color-primary)] px-4 py-1.5 rounded-full hover:bg-indigo-100 transition font-semibold border border-indigo-100 flex items-center gap-2 shadow-sm"
+                    title="View Paper"
                   >
-                    <FiFileText /> View
+                    <FiFileText /> View Paper
                   </button>
-                  <a
-                    href={paper?.file?.url}
-                    download
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-sm bg-indigo-50 text-[var(--color-primary)] px-3 py-1 rounded-full hover:bg-indigo-100 transition font-medium border border-indigo-100 flex items-center gap-1"
-                    title="Download Paper"
-                  >
-                    <FiArrowRight /> Download
-                  </a>
                   {user?.role === 'admin' && (
                     confirmDeleteId === paper._id ? (
                       <div className="flex items-center gap-1 bg-red-50 p-1 rounded">
