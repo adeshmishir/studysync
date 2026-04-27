@@ -1,5 +1,7 @@
-import express from 'express';
 import dotenv from 'dotenv';
+dotenv.config();
+
+import express from 'express';
 import cors from 'cors';
 import fileUpload from 'express-fileupload';
 
@@ -11,9 +13,6 @@ import doubtRoutes from './routes/doubtRoutes.js';
 import pypRoutes from './routes/pypRoutes.js';
 import attendanceRoutes from './routes/attendanceRoutes.js';
 
-
-
-dotenv.config();
 
 const app = express();
 
