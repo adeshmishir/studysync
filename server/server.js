@@ -1,13 +1,14 @@
 import express from 'express';
 import dotenv from 'dotenv';
 import cors from 'cors';
+import fileUpload from 'express-fileupload';
 
 import connectDB from './utils/db.js';
 
 import authRoutes from './routes/authRoutes.js';
 import noteRoutes from './routes/noteRoutes.js';
-// import doubtRoutes from './routes/doubtRoutes.js';
-import pypRoutes from './routes/pypRoutes.js'; // ✅ Correct path name
+import doubtRoutes from './routes/doubtRoutes.js';
+import pypRoutes from './routes/pypRoutes.js';
 import attendanceRoutes from './routes/attendanceRoutes.js';
 
 
@@ -20,7 +21,6 @@ const app = express();
 app.use(cors());
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
-import fileUpload from 'express-fileupload';
 
 app.use(fileUpload({
   useTempFiles: true,
@@ -31,7 +31,7 @@ app.use(fileUpload({
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/notes', noteRoutes);
-// app.use('/api/ai', doubtRoutes);
+app.use('/api/ai', doubtRoutes);
 app.use('/api/pypapers', pypRoutes);
 app.use('/api/attendance', attendanceRoutes);
 

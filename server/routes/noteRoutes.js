@@ -16,20 +16,27 @@ const uploadFiles = async (files) => {
       continue;
     }
 
-    const isPdf = file.mimetype === 'application/pdf';
+    try {
+      const isPdf = file.mimetype === 'application/pdf';
 
-    const result = await cloudinary.uploader.upload(file.tempFilePath, {
-      resource_type: isPdf ? "raw" : "auto",
-      folder: "studysync_notes",
-    });
+      const result = await cloudinary.uploader.upload(file.tempFilePath, {
+        resource_type: isPdf ? "raw" : "auto",
+        folder: "studysync_notes",
+      });
 
-    uploaded.push({
-      public_id: result.public_id,
-      url: result.secure_url,
-      format: result.format,
-    });
-
-    fs.unlinkSync(file.tempFilePath); // Clean up temp file
+      uploaded.push({
+        public_id: result.public_id,
+        url: result.secure_url,
+        format: result.format,
+      });
+    } catch (err) {
+      console.error("❌ Cloudinary upload error:", err);
+      throw err; // Re-throw to be handled by the route's catch block
+    } finally {
+      if (fs.existsSync(file.tempFilePath)) {
+        fs.unlinkSync(file.tempFilePath); // Clean up temp file
+      }
+    }
   }
 
   return uploaded;
