@@ -7,6 +7,7 @@ import {
   FiBarChart2,
   FiCheck,
   FiX,
+  FiMessageCircle,
 } from 'react-icons/fi';
 import useAuthStore from '../context/authStore';
 
@@ -19,6 +20,7 @@ const DashboardLayout = () => {
     { to: "/dashboard/notes", icon: <FiBookOpen />, label: "Notes", key: "notes" },
     { to: "/dashboard/pyp", icon: <FiFileText />, label: "PY Papers", key: "pyp" },
     { to: "/dashboard/attendance", icon: <FiBarChart2 />, label: "Attendance", key: "attendance" },
+    { to: "/dashboard/chat", icon: <FiMessageCircle />, label: "AI Assistant", key: "chat" },
   ];
 
   return (

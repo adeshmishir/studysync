@@ -1,4 +1,6 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
+import { FiMessageCircle } from 'react-icons/fi';
 import useAuthStore from '../context/authStore';
 
 const Dashboard = () => {
@@ -36,6 +38,20 @@ const Dashboard = () => {
              <div className="text-slate-400 text-sm capitalize">{user?.role || 'User'}</div>
           </div>
         </div>
+
+        {/* AI Assistant Card */}
+        <Link
+          to="/dashboard/chat"
+          className="block p-6 bg-gradient-to-r from-indigo-50 to-purple-50 rounded-3xl border border-indigo-200 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all"
+        >
+          <div className="flex items-center justify-center gap-3 mb-3">
+            <FiMessageCircle className="text-indigo-600 text-2xl" />
+            <h3 className="font-bold text-lg text-indigo-600">AI Assistant</h3>
+          </div>
+          <p className="text-slate-600 text-sm">
+            Ask academic questions, get explanations, and more with our intelligent AI tutor.
+          </p>
+        </Link>
 
         <p className="text-slate-400 text-sm italic">
           💡 Tip: Use the side navigation to start organizing your study materials!

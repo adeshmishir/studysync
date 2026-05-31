@@ -29,7 +29,7 @@ const LandingPage = () => {
       <header className="flex-1 flex flex-col items-center justify-center text-center px-4 py-20 bg-gradient-to-b from-transparent to-white/50">
         <div className="max-w-4xl space-y-6 animate-fade-in">
           <div className="inline-block px-4 py-1.5 bg-indigo-50 text-indigo-700 font-medium rounded-full text-sm mb-4 border border-indigo-100">
-            🚀 Boost your academic productivity
+            Boost your academic productivity
           </div>
           <h1 className="text-5xl md:text-7xl font-bold text-slate-900 tracking-tight font-serif leading-tight">
             Manage your studies <br />
